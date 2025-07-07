@@ -16,9 +16,9 @@ public class AgentsService : IAgentsService {
     }
 
     private void InitializeFakeAgents() {
-        _agents.Add(new Agent("1", "Agent 1", "First agent", new[]{ "http://agent1.example.com" }));
-        _agents.Add(new Agent("2", "Agent 2", "Second agent", new[]{"http://agent2.example.com" }));
-        _agents.Add(new Agent("3", "Agent 3", "Third agent", new[]{"http://agent3.example.com" }));
+        _agents.Add(new Agent("1", "Agent 1", "First agent", new() { { "http://agent1.example.com", new[]{"param1"} }}));
+        _agents.Add(new Agent("2", "Agent 2", "Second agent", new() { { "http://agent2.example.com", new[]{"p1", "p2"} } }));
+        _agents.Add(new Agent("3", "Agent 3", "Third agent", new() { { "http://agent3.example.com", Array.Empty<string>() } }));
     }
 
     public IEnumerable<Agent> GetAllAgents() {

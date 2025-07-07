@@ -1,6 +1,6 @@
-namespace CatalogApi.Models;
+namespace OperationAgent.Models;
 
-public record Agent(
+public record AgentInfo(
     string Id,
     string Name,
     string Description,
