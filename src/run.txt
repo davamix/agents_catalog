@@ -1,0 +1,7 @@
+$src> dotnet watch --project CatalogApi
+$src> dotnet watch --project OperationAgent
+
+
+# Swagger
+CatalogApi_Url/swagger
+OperationAgent_Url/swagger

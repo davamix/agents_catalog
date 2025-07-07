@@ -1,0 +1,64 @@
+# Build results
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS Code settings
+.vscode/
+
+# ASP.NET temporary files
+*.dbmdl
+*.dbproj.schemaview
+*.pdb
+*.cache
+*.log
+
+# NuGet packages
+*.nupkg
+packages/
+*.snupkg
+
+# Publish output
+publish/
+*.Publish.xml
+
+# IIS Express
+.vs/
+*.vspscc
+*.vssscc
+
+# Rider
+.idea/
+
+# DotCover
+*.dotCover
+
+# Resharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+
+# Test results
+TestResults/
+*.trx
+
+# Others
+*.swp
+*.bak
+*.tmp
+*.orig
+*.sdf
+*.sqlite
+*.mdf
+*.ldf
+
+# Local secrets
+secrets.json
+
+# Node modules (if using Node.js tooling)
+node_modules/
