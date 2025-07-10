@@ -1,5 +1,6 @@
 $src> dotnet watch --project CatalogApi
 $src> dotnet watch --project OperationAgent
+$src> dotnet watch --project AppSample
 
 
 # Swagger

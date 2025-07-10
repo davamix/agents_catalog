@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chatbot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background: #f5f7fa;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .chatbot-container {
+            background: #fff;
+            width: 400px;
+            max-width: 95vw;
+            height: 600px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #f0f4f8;
+        }
+        .message {
+            max-width: 75%;
+            padding: 10px 16px;
+            border-radius: 18px;
+            font-size: 15px;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+        .message.user {
+            align-self: flex-end;
+            background: #0078d4;
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+        .message.bot {
+            align-self: flex-start;
+            background: #e5e7eb;
+            color: #222;
+            border-bottom-left-radius: 4px;
+        }
+        .chat-input-section {
+            display: flex;
+            padding: 16px;
+            background: #fff;
+            border-top: 1px solid #e5e7eb;
+        }
+        .chat-input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 20px;
+            font-size: 15px;
+            outline: none;
+            margin-right: 8px;
+            transition: border 0.2s;
+        }
+        .chat-input:focus {
+            border-color: #0078d4;
+        }
+        .send-btn {
+            background: #0078d4;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .send-btn:hover {
+            background: #005fa3;
+        }
+    </style>
+</head>
+<body>
+    <div class="chatbot-container">
+        <div class="chat-messages" id="chatMessages">
+            <!-- Messages will appear here -->
+        </div>
+        <form class="chat-input-section" id="chatForm" autocomplete="off">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." required />
+            <button type="submit" class="send-btn">Send</button>
+        </form>
+    </div>
+    <script>
+        const chatMessages = document.getElementById('chatMessages');
+        const chatForm = document.getElementById('chatForm');
+        const chatInput = document.getElementById('chatInput');
+
+        function appendMessage(text, sender) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message ' + sender;
+            msgDiv.textContent = text;
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        chatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const userMsg = chatInput.value.trim();
+            if (!userMsg) return;
+            appendMessage(userMsg, 'user');
+            chatInput.value = '';
+
+            fetch('http://localhost:5033', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: userMsg })
+            })
+            .then(async response => {
+                if (!response.body) throw new Error('No response body');
+                const reader = response.body.getReader();
+                let decoder = new TextDecoder();
+                let botMsg = '';
+                let msgDiv = document.createElement('div');
+                msgDiv.className = 'message bot';
+                chatMessages.appendChild(msgDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    botMsg += decoder.decode(value, { stream: true });
+                    msgDiv.textContent = botMsg;
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+                // Optionally handle empty response
+                if (!botMsg) msgDiv.textContent = 'No response from bot.';
+            })
+            .catch(() => {
+                appendMessage('Error: Could not reach the server.', 'bot');
+            });
+        });
+    </script>
+</body>
+</html>
