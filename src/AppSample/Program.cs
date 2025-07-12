@@ -5,6 +5,7 @@ using AppSample.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using System;
+using System.Linq;
 
 var builder = WebApplication.CreateBuilder();
 
@@ -23,6 +24,12 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 app.UseCors("AllowAll");
+
+app.MapGet("/tools", async (HttpContext context, IOllamaService ollamaService) =>
+{
+    var tools = await ollamaService.GetToolsAsync();
+    await context.Response.WriteAsJsonAsync(tools);
+});
 
 app.MapPost("/", async (HttpContext context, IOllamaService ollamaService, HttpRequest request) =>
 {
@@ -43,6 +50,38 @@ app.MapPost("/", async (HttpContext context, IOllamaService ollamaService, HttpR
         Console.Write(response);
     }
 });
+
+try
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        Console.WriteLine("Loading tools catalog...");
+
+        var ollamaService = scope.ServiceProvider.GetRequiredService<IOllamaService>();
+
+        await ollamaService.LoadToolsCatalogAsync();
+
+        var tools = await ollamaService.GetToolsAsync();
+
+        if (tools.Any())
+        {
+            Console.WriteLine("Tools catalog loaded successfully.");
+            foreach (var tool in tools)
+            {
+                Console.WriteLine($"Tool: {tool.Name}");
+            }
+
+        }
+        else
+        {
+            Console.WriteLine("No tools found in the catalog.");
+        }
+    }
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Error loading tools catalog: {ex.Message}");
+}
 
 app.Run();
 

@@ -1,6 +1,7 @@
 using CatalogApi.Models;
 using CatalogApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder();
 
@@ -28,6 +29,18 @@ if (app.Environment.IsDevelopment()) {
 }
 
 app.MapGet("/", (IAgentsService service) => service.GetAllAgents());
-app.MapPost("/register", (IAgentsService service, [FromBody]Agent agent) => service.RegisterAgent(agent));
+
+app.MapPost("/register", (IAgentsService service, [FromBody] Agent agent) =>
+{
+    Console.WriteLine($"Registering agent: {agent.Name}");
+
+    service.RegisterAgent(agent);
+
+    Console.WriteLine($"Agent registered successfully.");
+    Console.WriteLine($"Agent ID: {agent.Id},\n" +
+    $"Name: {agent.Name},\n" +
+    $"Description: {agent.Description}\n" +
+    $"URLs: {string.Join(", ", agent.Urls.Select(u => $"{u.Key} ({string.Join(", ", u.Value)})"))}");
+});
 
 app.Run();

@@ -25,11 +25,13 @@ public class AgentsService : IAgentsService {
         return _agents;
     }
 
-    public void RegisterAgent(Agent agent) {
-        if (_agents.Any(a => a.Id == agent.Id)) {
-            _agents.RemoveAll(a=> a.Id == agent.Id);
+    public void RegisterAgent(Agent agent)
+    {
+        if (_agents.Any(a => a.Id == agent.Id))
+        {
+            _agents.RemoveAll(a => a.Id == agent.Id);
         }
-        
+
         _agents.Add(agent);
     }
 }
